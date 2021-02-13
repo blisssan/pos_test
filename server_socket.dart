@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'dart:typed_data';
 
+import 'package:charcode/ascii.dart';
+
 void main() {
   ServerSocket.bind(InternetAddress.anyIPv4, 4567).then((ServerSocket server) {
     server.listen(handleClient, onDone: onDone, onError: onError);
@@ -22,8 +24,12 @@ void handleClient(Socket client) {
 
   client.listen((event) {
     print(String.fromCharCodes(event).trim());
+    int lastByte = event[event.length - 1];
     List<int> byteData = [];
-    String inputHexStr = '39 39 30 1C 31 30 30 30 30 1C 31 30 31 30 30 1C';
+    String inputHexStr = '30 30 30 1C 31 30 30 30 30 1C 31 30 31 30 30 1C';
+    if (lastByte == $2) {
+      inputHexStr = '39 39 30 1C 31 30 30 30 30 1C 31 30 31 30 30 1C';
+    }
     byteData = hexDecode(inputHexStr);
     if (String.fromCharCodes(event).trim() == 'quit') {
       client.close();
