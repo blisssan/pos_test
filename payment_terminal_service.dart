@@ -6,10 +6,13 @@ import 'package:charcode/ascii.dart';
 
 class PaymentTerminalService {
   static var ascii = AsciiCodec();
+  String ip = '127.0.0.1';
+  int port = 4567;
 
-  PaymentTerminalService() {
+  PaymentTerminalService(String ip, String port) {
+    this.ip = ip;
+    this.port = int.tryParse(port) ?? 4567;
     response = _controller.stream;
-    _connect();
   }
 
   final StreamController<dynamic> _controller = StreamController.broadcast();
@@ -22,8 +25,11 @@ class PaymentTerminalService {
     _socket?.add(constructPaymentPacket(amountInCents));
   }
 
-  void _connect() async {
-    _socket = await Socket.connect('127.0.0.1', 4567);
+  Future<void> connect() async {
+    if (_socket != null) {
+      _socketClose();
+    }
+    _socket = await Socket.connect(ip, port);
     _socket?.listen(
       dataHandler,
       onError: errorHandler,
@@ -87,9 +93,13 @@ class PaymentTerminalService {
   }
 
   void close() {
+    _socketClose();
+    _controller.close();
+  }
+
+  void _socketClose() {
     _socket?.destroy();
     _socket == null;
-    _controller.close();
   }
 
   void errorHandler(error, StackTrace trace) {

@@ -6,7 +6,6 @@ PaymentTerminalService? _paymentService;
 
 void main() {
   initiateService();
-
   stdin.listen((data) {
     String input = String.fromCharCodes(data);
     if (input.trim() == 'totalquit') {
@@ -25,12 +24,22 @@ void main() {
   });
 }
 
-void initiateService() {
-  _paymentService = PaymentTerminalService();
-  _paymentService?.response?.listen((event) {
-    print('===>In stream:');
-    print(event);
-  }).onDone(() {
-    print('--->completed');
-  });
+void initiateService() async {
+  try {
+    _paymentService = PaymentTerminalService('127.0.0.1', '4567');
+    await _paymentService?.connect();
+    print('Connected');
+    print('');
+    _paymentService?.response?.listen((event) {
+      print('===>In stream:');
+      print(event);
+      print('');
+    }).onDone(() {
+      print('--->completed');
+      print('');
+    });
+  } on Exception catch (error) {
+    print('****  ERROR *****');
+    print(error.toString());
+  }
 }
