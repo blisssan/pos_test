@@ -12,6 +12,6 @@ void handleClient(Socket client){
   print('Connection from '
       '${client.remoteAddress.address}:${client.remotePort}');
 
-  client.write("Hello from simple server!\n");
+  client.write('Hello from simple server!\n');
   client.close();
 }
