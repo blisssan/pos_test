@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:charcode/ascii.dart';
+
 Socket? socket;
 
 void main() {
-  Socket.connect("142.112.103.19", 4567).then((Socket sock) {
+  Socket.connect('127.0.0.1', 4567).then((Socket sock) {
     socket = sock;
     if (socket == null) {
       throw Exception("Invalid Socket");
@@ -17,7 +19,9 @@ void main() {
 
   //Connect standard in to the socket
   stdin.listen((data) {
-    socket?.write(new String.fromCharCodes(data).trim() + '\n');
+    //socket?.write(new String.fromCharCodes(data).trim() + '\n');
+    var charBytes = [$0, $0, $fs, $0, $0, $1, $1, $0, $0];
+    socket?.add(charBytes);
   });
 }
 
@@ -30,6 +34,6 @@ void errorHandler(error, StackTrace trace) {
 }
 
 void doneHandler() {
-  socket?.destroy();
-  exit(0);
+  // socket?.destroy();
+  // exit(0);
 }
